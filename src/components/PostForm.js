@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import Axios from "axios";
 
 function PostForm(){
+    const [column, setColumn] = useState([])
+    const [records, setRecords] = useState([])
+
     const url ="http://localhost:3030/api/v1/users"
     const [data, setData] = useState({
         firstname: "",
@@ -22,16 +26,28 @@ function PostForm(){
     function submitGet(e){
         e.preventDefault();
         Axios.get(url).then(res => {
-            console.log("Here is the Data")
-            console.log(res.data)
+            setColumn(Object.keys(res.data[0]))
+            setRecords(res.data)
         })
     }
     function handleSubmit(e){
         const newData={...data}
         newData[e.target.id] = e.target.value
         setData(newData)
-        console.log(newData)
     }
+    let tb_data = (
+        <tbody>
+            {
+                records.map((record, i) =>(
+                    <tr key={i}>
+                        <td>{record.firstname}</td>
+                        <td>{record.lastname}</td>
+                        <td>{record.location}</td>
+                    </tr>
+                ))
+            }
+        </tbody>
+    )
     return (
         <div>
             <div>
@@ -46,6 +62,18 @@ function PostForm(){
                 <form onSubmit={(e)=>submitGet(e)}>
                     <button>Get Data in Console</button>
                 </form>
+            </div>
+            <div>
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>firstname</th>
+                            <th>lastname</th>
+                            <th>location</th>
+                        </tr>
+                    </thead>
+                    {tb_data}
+                </table>
             </div>
         </div>
     );
